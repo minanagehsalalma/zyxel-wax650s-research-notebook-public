@@ -1,0 +1,49 @@
+label=ui_vuln_sweep_20260423au_social_login_cp_toggle
+date=2026-04-23
+target=http://127.0.0.1:8080
+
+goal:
+- test whether `/tmp/cp_simulate` is required at request time for `social_login.cgi` acceptance on a live repaired portal lane
+
+setup:
+- used the same helper-built repaired portal lane shape as `portal_smoke_20260423d_recheck_after_core_hang`
+- helper still seeded:
+  - `runroot/tmp/cp_simulate`
+  - synthetic portal runtime assets
+  - helper artifact directory:
+    - `live_artifacts/social_login_cp_toggle_20260423a`
+
+live_result:
+- with `cp_simulate` present:
+  - direct `POST /cgi-bin/social_login.cgi`
+  - body: `fb_user=test@example.com`
+  - result: `HTTP 200`
+  - returned token body:
+    - `Set-Cookie: authtok=<redacted-lab-token>; path=/; HttpOnly`
+- then removed `runroot/tmp/cp_simulate` while the same listener stayed live:
+  - `ss` still showed `127.0.0.1:8080` listening
+- with `cp_simulate` absent on that same live lane:
+  - repeated direct `POST /cgi-bin/social_login.cgi`
+  - body: `fb_user=test@example.com`
+  - result: `HTTP 200`
+  - returned token body:
+    - `Set-Cookie: authtok=<redacted-lab-token>; path=/; HttpOnly`
+
+backend_evidence:
+- `.lab-state/uamd.log` recorded both logins:
+  - `logger_handle_login: User 94.13.3.133: User test@example.com social login fb login.`
+  - `logger_handle_login: User 127.0.0.1: User test@example.com social login fb login.`
+- `.lab-state/uamd.strace.1775969` shows matching `/dev/user-notify` and `/dev/user-request` traffic for both tokens:
+  - first acceptance used `E3Rw...`
+  - second acceptance used `BKg7...`
+
+current_implication:
+- `/tmp/cp_simulate` is not required at request time for `social_login.cgi` to accept arbitrary `fb_user` once the repaired helper-built lane is already live
+- the marker appears to influence the source-IP path or fake-user path:
+  - with marker present, one acceptance logged foreign IP `94.13.3.133`
+  - with marker absent, the next acceptance logged `127.0.0.1`
+- this meaningfully weakens the earlier "cp_simulate-gated acceptance" caveat
+- but the lane is still not stock:
+  - the portal runtime was bootstrapped through synthetic helper state before the marker was removed
+- safest current framing:
+  - social-login acceptance survives runtime removal of `cp_simulate`, but the finding still needs reproduction on a non-synthetic portal bring-up before it can be packaged as a reviewer-safe product auth-bypass

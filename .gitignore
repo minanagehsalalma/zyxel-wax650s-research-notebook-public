@@ -1,0 +1,31 @@
+.DS_Store
+Thumbs.db
+
+# Local lab material intentionally excluded from the public snapshot.
+710ABRM4C0*
+*_extracted/
+runroot/
+.lab-state/
+live_artifacts/
+zyxel_report/
+*.bin
+*.img
+*.ubifs
+*.squashfs
+*.pcap
+*.pcapng
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.key
+*.pem
+*.sqlite
+*.db
+.demo-http.log
+
+# Local editor/runtime files.
+.venv/
+node_modules/
+__pycache__/
+*.pyc

@@ -1,0 +1,33 @@
+result_class=web_lane_cookie_desync_fallback_smoke
+date=2026-04-21
+lane=manual_lighttpd_over_core
+baseline_http=200
+baseline_user_type=1
+baseline_missing_user_fallback=no
+baseline_body_completed=no
+semicolon_suffix_http=200
+semicolon_suffix_missing_user_fallback=yes
+semicolon_suffix_unique=testtoken; foo=bar
+semicolon_suffix_body_completed=no
+dup_valid_first_http=200
+dup_valid_first_missing_user_fallback=yes
+dup_valid_first_unique=testtoken; authtok=junk
+dup_valid_first_body_completed=no
+
+[interpretation]
+- This run uses the healthy `core` seam plus manual `lighttpd` and tests only the narrow parser-desync candidates implied by the static reversing.
+- The baseline cookie `authtok=testtoken` stays on the normal guest path and logs `user type: 1` in the original `baseline.zysh-cgi.dump.txt` artifact.
+- `Cookie: authtok=testtoken; foo=bar` reaches the real web lane, returns `HTTP 200`, and the CGI dump logs:
+- `consider multi-wan case: addr = 127.0.0.1, unique = testtoken; foo=bar: try to workaround`
+- `can't found user: addr = 127.0.0.1, unique = testtoken; foo=bar: set to type admin`
+- `Cookie: authtok=testtoken; authtok=junk` reaches the same fallback and logs:
+- `consider multi-wan case: addr = 127.0.0.1, unique = testtoken; authtok=junk: try to workaround`
+- `can't found user: addr = 127.0.0.1, unique = testtoken; authtok=junk: set to type admin`
+- This proves the full cookie string reaches `zysh-cgi` from the real web lane and that the static parser mismatch with `mod_auth_zyxel` is live-reachable.
+- It does not prove final privileged completion: both desync variants stall after the `HTTP 200` headers, leave empty response bodies, and the original `lighttpd.log` still records `% Insufficient privilege`.
+- The side-effect shape changes in the original `semicolon_suffix.clidump.gui.txt` and `dup_valid_first.clidump.gui.txt`: both add `configure terminal` before `show running-config`, unlike the baseline.
+
+[artifacts]
+- selected public copy: `artifacts/reports/open-redirect/dynamic/manual_cookie_desync_summary.txt`
+- selected public dump: `artifacts/reports/open-redirect/dynamic/dup_valid_first.zysh-cgi.dump.txt`
+- original bulk headers, body files, and service logs are excluded from the public snapshot.

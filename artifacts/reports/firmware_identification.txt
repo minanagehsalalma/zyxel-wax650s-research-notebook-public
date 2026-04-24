@@ -1,0 +1,20 @@
+FIRMWARE IDENTIFICATION
+═══════════════════════════════════════════════════════════════════════
+Source ZIP:   WAX650S_7.10-ABRM.4-C0-6.zip
+Inner binary: 710ABRM4C0.bin
+
+SHA-256 (inner binary):
+  e0a93db912c0b7203e0eb899f07ddef99b62a82a27352477c0f85d761576b1e0
+
+Architecture: ARM aarch64 (ELF 64-bit LSB, musl-libc)
+Web server:   lighttpd 1.4.76 (confirmed from server logs)
+
+KEY BINARY HASHES (from extracted rootfs):
+  lighttpd:            db6e3ae1cc71289247151005a7ec90db9f8d56ab146b1dc7d8beb990e721cb08
+  mod_auth_zyxel.so:   9ba6a2eb9c57272704f02b7d061d5d35da780dd31cfeb9cf9237f28dc7fd5fe2
+  zysh-cgi:            4b34c22517b9ee76974533748a8a4c464bf601ae6be91ac21093ebc99a366eeb
+  export-cgi:          90dfaa4def62656a55fd0411d5658816d51534c9a68675c5054fe5864254c315
+  Clicktocontinue.cgi: 3e04c18b483f08b29351f1a97ee7a82f2ddb5fda095dc9efe09676fb7a158266
+  /bin/zysh:           67cecf682d0f32e9e5e3945c2cc013aaaf5cfeb1faf89c0e8418a58e74bba7b4
+
+/bin/zysh permissions: -rwsr-xr-x 1 root root  (setuid root)

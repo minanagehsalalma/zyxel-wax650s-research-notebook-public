@@ -1,0 +1,126 @@
+=== dns_host_only ===
+HTTP/1.1 500 Internal Server Error
+X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: interest-cohort=()
+Transfer-Encoding: chunked
+Date: Thu, 23 Apr 2026 16:57:38 GMT
+Server: zyxel-lab
+
+-- body --
+-- log tail --
+[Thu Apr 23 16:57:37 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:38 2026]dns_filter.c: (send_page:162) [OPEN] /tmp/captive-portal/dns-filter/dns_filter_block.html: No such file or directory
+
+=== dns_host_ext ===
+HTTP/1.1 302 Found
+Location: http://example.com/path?threat_url=example.com&threat_type=Unknown
+X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: interest-cohort=()
+Transfer-Encoding: chunked
+Date: Thu, 23 Apr 2026 16:57:38 GMT
+Server: zyxel-lab
+
+-- body --
+-- log tail --
+[Thu Apr 23 16:57:37 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:38 2026]dns_filter.c: (send_page:162) [OPEN] /tmp/captive-portal/dns-filter/dns_filter_block.html: No such file or directory
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:38 2026]dns_filter.c: (main:372) ext_url=http://example.com/path
+
+=== dns_host_ext_close ===
+HTTP/1.1 302 Found
+Location: http://example.com/path?threat_url=example.com&threat_type=Unknown
+X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: interest-cohort=()
+Transfer-Encoding: chunked
+Date: Thu, 23 Apr 2026 16:57:39 GMT
+Server: zyxel-lab
+
+-- body --
+-- log tail --
+[Thu Apr 23 16:57:37 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:38 2026]dns_filter.c: (send_page:162) [OPEN] /tmp/captive-portal/dns-filter/dns_filter_block.html: No such file or directory
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:38 2026]dns_filter.c: (main:372) ext_url=http://example.com/path
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:39 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:39 2026]dns_filter.c: (main:372) ext_url=http://example.com/path
+
+=== dns_host_ext_proceed ===
+HTTP/1.1 302 Found
+Location: http://example.com/path?threat_url=example.com&threat_type=Unknown
+X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: interest-cohort=()
+Transfer-Encoding: chunked
+Date: Thu, 23 Apr 2026 16:57:39 GMT
+Server: zyxel-lab
+
+-- body --
+-- log tail --
+[Thu Apr 23 16:57:37 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:38 2026]dns_filter.c: (send_page:162) [OPEN] /tmp/captive-portal/dns-filter/dns_filter_block.html: No such file or directory
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:38 2026]dns_filter.c: (main:372) ext_url=http://example.com/path
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:39 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:39 2026]dns_filter.c: (main:372) ext_url=http://example.com/path
+[Thu Apr 23 16:57:39 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:39 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:39 2026]dns_filter.c: (main:372) ext_url=http://example.com/path
+
+=== iprep_host_only ===
+HTTP/1.1 500 Internal Server Error
+Content-Type: text/html
+X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: interest-cohort=()
+Content-Length: 182
+Date: Thu, 23 Apr 2026 16:57:39 GMT
+Server: zyxel-lab
+
+-- body --
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8" />
+  <title>500 Internal Server Error</title>
+-- log tail --
+[Thu Apr 23 16:57:37 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:38 2026]dns_filter.c: (send_page:162) [OPEN] /tmp/captive-portal/dns-filter/dns_filter_block.html: No such file or directory
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:38 2026]dns_filter.c: (main:372) ext_url=http://example.com/path
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:39 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:39 2026]dns_filter.c: (main:372) ext_url=http://example.com/path
+[Thu Apr 23 16:57:39 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:39 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:39 2026]dns_filter.c: (main:372) ext_url=http://example.com/path
+
+=== iprep_host_ext ===
+HTTP/1.1 302 Found
+Location: http://example.com/path?threat_url=example.com&threat_type=
+X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: interest-cohort=()
+Transfer-Encoding: chunked
+Date: Thu, 23 Apr 2026 16:57:39 GMT
+Server: zyxel-lab
+
+-- body --
+-- log tail --
+[Thu Apr 23 16:57:37 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:38 2026]dns_filter.c: (send_page:162) [OPEN] /tmp/captive-portal/dns-filter/dns_filter_block.html: No such file or directory
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:38 2026]dns_filter.c: (main:372) ext_url=http://example.com/path
+[Thu Apr 23 16:57:38 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:39 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:39 2026]dns_filter.c: (main:372) ext_url=http://example.com/path
+[Thu Apr 23 16:57:39 2026]dns_filter.c: (main:359) host=example.com
+[Thu Apr 23 16:57:39 2026]dns_filter.c: (chk_cloud_category:82) buf [Thu Apr 23 16:57:39 2026]dns_filter.c: (main:372) ext_url=http://example.com/path
+[Thu Apr 23 16:57:40 2026]ip_reputation_block.c: (main:225) host=example.com
+[Thu Apr 23 16:57:40 2026]ip_reputation_block.c: (main:234) ext_url=http://example.com/path
+

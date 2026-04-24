@@ -1,0 +1,6 @@
+offset = 0
+write = 0
+cmd[0](len=20):show running-config
+num of cmds: 1
+consider multi-wan case: addr = 127.0.0.1, unique = testtoken; authtok=junk: try to workaround
+can't found user: addr = 127.0.0.1, unique = testtoken; authtok=junk: set to type admin

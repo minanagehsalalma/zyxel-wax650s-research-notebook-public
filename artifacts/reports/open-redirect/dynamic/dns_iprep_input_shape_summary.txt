@@ -1,0 +1,17 @@
+# DNS filter and IP reputation host-shape retry
+
+UTC: 2026-04-23
+
+## Result
+
+Host-only `ext_url` shapes also did not promote for `dns_filter.cgi` or `ip_reputation_block.cgi`.
+
+## Evidence
+
+- `ip_reputation_block.cgi` returned `Invalid host !!!` for `example.com`, command-substitution, and semicolon host shapes under both GET/POST variants tested.
+- `dns_filter.cgi` returned `HTTP 500` for the same host-shaped baseline and metacharacter variants.
+- No `DNS_CGI_MARK_S` or `IPREP_CGI_MARK_S` marker file appeared under `runroot/tmp`.
+
+## Boundary
+
+The current lane does not prove command execution, redirect abuse, or token/session impact from these native portal handlers. Do not promote this branch without a different accepted request shape or static proof of a reachable command sink.

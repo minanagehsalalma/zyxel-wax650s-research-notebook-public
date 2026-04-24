@@ -1,0 +1,10 @@
+HTTP/1.1 302 Found
+Location: http://evil.test/path?threat_url=example.com&threat_type=
+X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: interest-cohort=()
+Transfer-Encoding: chunked
+Date: Thu, 23 Apr 2026 17:04:46 GMT
+Server: zyxel-lab
+

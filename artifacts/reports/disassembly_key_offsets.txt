@@ -1,0 +1,58 @@
+KEY DISASSEMBLY — mod_auth_zyxel.so
+Confirms: SkipUserPattern bypass for /cgi-bin/ URLs
+═══════════════════════════════════════════════════════════════════════
+Control flow in the auth handler (hex offsets within .so):
+
+  fcc:  bl  uam_find_first_match     ; validate session token
+  fe0:  b.le e78                     ; no session → 302 redirect to login
+  fe4:  ldrb w0, [x29, #0x1a1]      ; read user type (struct offset 0x159)
+                                     ;   type 0 = admin
+                                     ;   type 1 = guest (captive portal)
+                                     ;   type 2 = limited user
+  ff4:  b.hi e50                     ; type > 2 (admin) → ALLOW immediately
+  ff8:  ldr  x1, [x22, #64]         ; load SkipUserPattern list
+  1000: bl   <strstr_match>          ; check URL against each pattern
+  1004: cbz  w0, e78                 ; no match → 302 redirect to login
+  1008: b    e50                     ; MATCH → ALLOW   ← BUG: "/cgi-bin/" matches
+
+  e50:  mov  w0, #0                  ; HANDLER_GO_ON — request proceeds
+
+ROOT CAUSE: auth_zyxel.conf line 47
+  auth_zyxel.AuthZyxelSkipUserPattern = ( "/cgi-bin/" ... )
+                                               ^^^^^^^^
+  "/cgi-bin/" is a substring of every request URL under /cgi-bin/
+  This means ANY guest/user session bypasses authentication for ALL
+  CGI handlers including zysh-cgi, export-cgi, and file_upload-cgi.
+
+══════════════════════════════════════════════════════════════════════
+KEY DISASSEMBLY — zysh-cgi
+Confirms: no privilege check before forking /bin/zysh
+═══════════════════════════════════════════════════════════════════════
+  401780: bl  uam_find_first_match   ; validate token
+  401784: cmp w0, wzr
+  401788: b.le 401ddc               ; invalid session → fallback path
+  40178c: ldrb w25, [x29, #865]     ; read user type from result struct
+  ; ... (logs type, continues regardless of value)
+  401838: bl  fork                   ; forks
+  ; child: dup2 pipes, execve /bin/zysh with user-supplied 'cmd' param
+  401d50: bl  execve                 ; execve("/bin/zysh", args, env)
+
+  MISSING: there is no branch between 40178c (read type) and 401838
+  (fork) that would reject types below a privilege threshold.
+  All session types reach execve.
+
+══════════════════════════════════════════════════════════════════════
+KEY DISASSEMBLY — export-cgi
+Confirms: arg1 (password) flows unsanitized into system()
+═══════════════════════════════════════════════════════════════════════
+  Format string at .rodata:
+    /bin/zysh -p 200 -e "configure terminal ca _export
+    category local name %s password %s"
+
+  400dd0: bl  snprintf(cmd, 4096, format, arg0, arg1)
+  400dd8: bl  unlink(tmp_path)
+  400de0: bl  system(cmd)           ← ARG1 INJECTED HERE
+
+  No sanitization of arg1 before insertion into the shell command string.
+  A double-quote (") in arg1 closes the zysh argument and injects
+  into the parent shell context, executing as the process owner (root).

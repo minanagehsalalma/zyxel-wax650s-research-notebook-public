@@ -1,0 +1,6 @@
+dns_direct_brand           http=302 loc=http://evil.test/path?threat_url=example.com&threat_type=Unknown first=<empty>
+iprep_direct_brand         http=302 loc=http://evil.test/path?threat_url=example.com&threat_type= first=<empty>
+dns_cp_trav                http=404 loc=<none> first=<!DOCTYPE html>
+iprep_cp_trav              http=404 loc=<none> first=<!DOCTYPE html>
+dns_cp_encoded             http=404 loc=<none> first=<!DOCTYPE html>
+iprep_cp_encoded           http=404 loc=<none> first=<!DOCTYPE html>

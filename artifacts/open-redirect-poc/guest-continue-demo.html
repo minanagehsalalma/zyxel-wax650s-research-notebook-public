@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zyxel Guest Network Access</title>
+  <style>
+    :root {
+      --zyxel-blue: #00b2ff;
+      --zyxel-text: #666666;
+      --zyxel-dark: #333333;
+      --zyxel-bg: #f5f5f5;
+      --zyxel-line: #d9d9d9;
+      --zyxel-soft: #f8fbfd;
+      --zyxel-danger: #ff2837;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--zyxel-bg);
+      font-family: "Century Gothic", Tahoma, Arial, Helvetica, sans-serif;
+      color: var(--zyxel-text);
+    }
+
+    body {
+      padding: 32px 18px;
+    }
+
+    .portal-shell {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      background: #ffffff;
+      box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+      border: 1px solid #ececec;
+    }
+
+    .portal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 22px 28px 0;
+    }
+
+    .portal-logo {
+      width: 90px;
+      height: 20px;
+      flex: 0 0 auto;
+      margin-top: 6px;
+    }
+
+    .portal-header-main {
+      flex: 1 1 auto;
+      text-align: center;
+    }
+
+    .portal-title {
+      margin: 0;
+      font-size: 26px;
+      font-weight: bold;
+      color: var(--zyxel-dark);
+    }
+
+    .portal-subtitle {
+      width: min(620px, 100%);
+      margin: 22px auto 0;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--zyxel-text);
+    }
+
+    .portal-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      padding: 22px 0 0;
+      margin-top: 6px;
+    }
+
+    .panel {
+      min-height: 330px;
+      padding: 0 42px 28px;
+    }
+
+    .panel-left {
+      border-right: 1px solid var(--zyxel-line);
+    }
+
+    .section-title {
+      margin: 0 0 18px;
+      color: var(--zyxel-blue);
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .copy {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.75;
+      text-align: justify;
+    }
+
+    .warning-box {
+      margin-top: 24px;
+      padding: 14px 16px;
+      border-left: 3px solid var(--zyxel-danger);
+      background: #fff8f8;
+      color: var(--zyxel-danger);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .panel-right {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel-right::after {
+      content: "";
+      position: absolute;
+      right: 12px;
+      bottom: 8px;
+      width: 250px;
+      height: 188px;
+      background: url("./assets/login_background.png") no-repeat center / contain;
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    .status-chip {
+      display: inline-block;
+      padding: 8px 12px;
+      border: 1px solid #bde9fb;
+      color: var(--zyxel-blue);
+      background: var(--zyxel-soft);
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .field-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 22px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .field-icon {
+      width: 31px;
+      height: 31px;
+      flex: 0 0 auto;
+    }
+
+    .field-block {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: var(--zyxel-text);
+    }
+
+    .field-value {
+      display: block;
+      width: 100%;
+      padding: 4px 0 10px;
+      border-bottom: 1px solid #555555;
+      color: #575757;
+      font-size: 15px;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .credential-shell {
+      margin-top: 24px;
+      max-width: 360px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .credential-row {
+      margin-top: 14px;
+    }
+
+    .credential-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: var(--zyxel-text);
+    }
+
+    .credential-input {
+      display: block;
+      width: 100%;
+      height: 34px;
+      padding: 6px 10px;
+      border: 1px solid #bfbfbf;
+      background: #f8f8f8;
+      color: #7b7b7b;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .credential-input:disabled {
+      opacity: 1;
+      cursor: not-allowed;
+    }
+
+    .credential-hint {
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #8c8c8c;
+    }
+
+    .panel-note {
+      margin-top: 22px;
+      max-width: 340px;
+      font-size: 13px;
+      line-height: 1.65;
+      position: relative;
+      z-index: 1;
+    }
+
+    .primary-action {
+      margin-top: 26px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .primary-action a {
+      display: inline-block;
+      min-width: 170px;
+      height: 40px;
+      line-height: 38px;
+      border: 1px solid var(--zyxel-blue);
+      text-align: center;
+      text-decoration: none;
+      font-size: 21px;
+      font-weight: bold;
+      color: var(--zyxel-blue);
+      background: #ffffff;
+      transition: 0.25s ease;
+    }
+
+    .primary-action a[aria-disabled="true"] {
+      border-color: #84d8ff;
+      color: #84d8ff;
+      background: #f8fdff;
+      pointer-events: none;
+    }
+
+    .primary-action a:hover {
+      background: var(--zyxel-blue);
+      color: #ffffff;
+    }
+
+    .secondary-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 18px;
+      color: var(--zyxel-text);
+      text-decoration: none;
+      font-size: 13px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .secondary-action img {
+      width: 20px;
+      height: 13px;
+    }
+
+    .portal-footer {
+      padding: 0 42px 26px;
+    }
+
+    .footer-note-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: #555555;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .footer-note-head img {
+      width: 12px;
+      height: 15px;
+    }
+
+    .footer-copy {
+      max-width: 760px;
+      font-size: 13px;
+      line-height: 1.65;
+      color: #555555;
+    }
+
+    .footer-copy strong {
+      color: var(--zyxel-blue);
+      font-weight: normal;
+    }
+
+    @media (max-width: 860px) {
+      .portal-header {
+        display: block;
+      }
+
+      .portal-logo {
+        margin-bottom: 18px;
+      }
+
+      .portal-header-main {
+        text-align: left;
+      }
+
+      .portal-subtitle {
+        margin: 16px 0 0;
+      }
+
+      .portal-body {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        min-height: auto;
+        padding: 0 24px 24px;
+      }
+
+      .panel-left {
+        border-right: none;
+        border-bottom: 1px solid var(--zyxel-line);
+        padding-bottom: 26px;
+        margin-bottom: 24px;
+      }
+
+      .panel-right::after {
+        width: 190px;
+        height: 140px;
+        opacity: 0.14;
+      }
+
+      .field-value {
+        white-space: normal;
+      }
+
+      .portal-footer {
+        padding: 0 24px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="portal-shell">
+    <header class="portal-header">
+      <img class="portal-logo" src="./assets/login_logo.png" alt="Zyxel">
+      <div class="portal-header-main">
+        <h1 class="portal-title">WAX650S Guest Network Access</h1>
+        <div class="portal-subtitle">
+          Redirected from a trusted captive-portal hostname. This benign proof-of-concept page is styled to match the
+          Zyxel login and guest-access workflow so the redirect impact looks believable in the exact bug context.
+        </div>
+      </div>
+      <div style="width:90px;flex:0 0 auto;" aria-hidden="true"></div>
+    </header>
+
+    <section class="portal-body">
+      <div class="panel panel-left">
+        <h2 class="section-title">Guest Access Verification</h2>
+        <p class="copy">
+          Devices on public or guest Wi-Fi are already conditioned to follow branded Zyxel captive-portal redirects before
+          internet access is granted. A pre-auth open redirect on that same branded host can therefore send users to an
+          external controlled page that still looks like a normal network continuation step.
+        </p>
+        <div class="warning-box">
+          Demonstration status: this page is non-collecting and exists only to show why trusted-domain abuse is believable
+          on a captive-portal device.
+        </div>
+      </div>
+
+      <div class="panel panel-right">
+        <div class="status-chip">Portal Session Validation</div>
+
+        <div class="field-row">
+          <img class="field-icon" src="./assets/account_user.png" alt="">
+          <div class="field-block">
+            <span class="field-label">Portal Host</span>
+            <span class="field-value">nap-slogin.nebula.zyxel.com</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <img class="field-icon" src="./assets/account_user.png" alt="">
+          <div class="field-block">
+            <span class="field-label">Guest Network Flow</span>
+            <span class="field-value">Guest Sign-In Review</span>
+          </div>
+        </div>
+
+        <div class="credential-shell">
+          <div class="credential-row">
+            <label class="credential-label" for="guest-user">User Name</label>
+            <input class="credential-input" id="guest-user" type="text" value="guest.user@example.com" disabled>
+          </div>
+
+          <div class="credential-row">
+            <label class="credential-label" for="guest-password">Password</label>
+            <input class="credential-input" id="guest-password" type="password" value="example-password" disabled>
+          </div>
+
+          <div class="credential-hint">
+            Visual-only login step for coordinated disclosure. The fields are disabled to keep the demonstration
+            non-collecting.
+          </div>
+        </div>
+
+        <div class="panel-note">
+          This mirrors the kind of branded sign-in or continuation screen a guest user expects after following a
+          captive-portal redirect.
+        </div>
+
+        <div class="primary-action">
+          <a href="#" aria-disabled="true">Sign In</a>
+        </div>
+
+        <a class="secondary-action" href="#">
+          <img src="./assets/back_login_icon.png" alt="">
+          Return to access notice
+        </a>
+      </div>
+    </section>
+
+    <footer class="portal-footer">
+      <div class="footer-note-head">
+        <img src="./assets/i_note_new.png" alt="">
+        Demo Note
+      </div>
+      <div class="footer-copy">
+        This page uses Zyxel-style layout, copy density, button treatment, and shipped artwork to demonstrate why the
+        redirect is convincing on a captive-portal device. Keep any live validation on a controlled benign host such as
+        <code>guest-continue.example</code>. <strong>Coordinated disclosure demonstration only.</strong>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>

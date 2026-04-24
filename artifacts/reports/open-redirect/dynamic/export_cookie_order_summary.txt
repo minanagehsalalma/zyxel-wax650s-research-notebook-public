@@ -1,0 +1,54 @@
+result_class=ui_vuln_sweep
+date=2026-04-23
+focus=curl_only_export_cookie_order_boundary
+
+[cookie-order-rule]
+- the current curl-only matrix refines the `export-cgi` cookie boundary into an order-sensitive rule:
+  - arbitrary leading cookies are tolerated if a valid `authtok` is the final meaningful cookie token
+  - anything after a valid `authtok` breaks `export-cgi`
+- stable passing examples on the plain config export control:
+  - `Cookie: authtok=<redacted-lab-token>` -> `HTTP 200`
+  - `Cookie: foo=bar; authtok=<redacted-lab-token>` -> `HTTP 200`
+  - `Cookie: ys-PortalCookiestandalone=foo; authtok=<redacted-lab-token>` -> `HTTP 200`
+  - `Cookie: foo=bar; baz=qux; authtok=<redacted-lab-token>` -> `HTTP 200`
+  - `Cookie: foo=bar;authtok=<redacted-lab-token>` -> `HTTP 200`
+  - `Cookie: foo=bar;[tab]authtok=<redacted-lab-token>` -> `HTTP 200`
+  - `Cookie: foo=\"bar\"; authtok=<redacted-lab-token>` -> `HTTP 200`
+- stable failing examples on the same control:
+  - `Cookie: authtok=<redacted-lab-token>; foo=bar` -> `HTTP 400`
+  - `Cookie: authtok=<redacted-lab-token>; ys-PortalCookiestandalone=foo` -> `HTTP 400`
+  - `Cookie: foo=bar; authtok=<redacted-lab-token>; baz=qux` -> `HTTP 400`
+  - `Cookie: foo=bar; authtok=<redacted-lab-token>;` -> `HTTP 400`
+  - `Cookie: authtok=<redacted-lab-token>; ` -> `HTTP 400`
+  - `Cookie: authtok=<redacted-lab-token>;; foo=bar` -> `HTTP 400`
+  - `Cookie: authtok=<redacted-lab-token>; =` -> `HTTP 400`
+
+[duplicate-authtok]
+- duplicate `authtok` handling splits differently from the trailing-cookie failure:
+  - `Cookie: authtok=junk; authtok=<redacted-lab-token>`
+    - `export-cgi` -> `HTTP 302`
+    - `zysh-cgi` -> `HTTP 302`
+    - redirect target on both handlers:
+      - `Location: http://127.0.0.1:8080/`
+  - `Cookie: authtok=<redacted-lab-token>; authtok=junk`
+    - `export-cgi` -> `HTTP 400`
+    - `zysh-cgi` -> `HTTP 200`
+- implication:
+  - an inference from the duplicate-cookie control is that the outer auth layer still keys off the first `authtok`, while `export-cgi` also has its own stricter post-auth cookie parsing once a valid `authtok` is followed by more tokens
+
+[handler-comparison]
+- `zysh-cgi` remains more tolerant than `export-cgi` for the trailing-cookie cases:
+  - `Cookie: authtok=<redacted-lab-token>; foo=bar` -> `zysh-cgi HTTP 200`
+  - `Cookie: foo=bar; authtok=<redacted-lab-token>; baz=qux` -> `zysh-cgi HTTP 200`
+  - `Cookie: foo=bar; authtok=<redacted-lab-token>;` -> `zysh-cgi HTTP 200`
+  - representative body remains:
+    - `var zyshdata0=[];`
+    - `var errno0=0;`
+    - `var errmsg0='OK';`
+
+[implication]
+- the current export boundary is now best described as:
+  - `export-cgi` accepts a valid trailing `authtok`
+  - `export-cgi` rejects trailing cookie material after a valid `authtok`
+  - the broader auth layer still redirects when the first `authtok` is junk
+- this tighter curl-only rule is a better explanation for the earlier browser-vs-curl split than a portal-cookie-specific theory

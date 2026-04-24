@@ -1,0 +1,40 @@
+result_class=cookie_desync_backend_compare
+date=2026-04-22
+baseline_http=200
+baseline_body_bytes=0
+baseline_fallback=no
+baseline_guest_user_type=yes
+baseline_configure_terminal=no
+baseline_insufficient_privilege=no
+baseline_trace_key_line_count=0
+semicolon_suffix_http=200
+semicolon_suffix_body_bytes=0
+semicolon_suffix_fallback=yes
+semicolon_suffix_guest_user_type=no
+semicolon_suffix_configure_terminal=yes
+semicolon_suffix_insufficient_privilege=no
+semicolon_suffix_trace_key_line_count=0
+
+[interpretation]
+- The healthy-seam baseline and the semicolon cookie-desync case were replayed in the same manual `core` lane using the same `show running-config` request shape.
+- The baseline stays on the normal guest path: `zysh-cgi.dump` logs `user type: 1` and `clidump.gui` stages only `enable` plus `show running-config`.
+- The semicolon desync case reaches the missing-user fallback again: `zysh-cgi.dump` logs `can't found user ... set to type admin` and `clidump.gui` adds `configure terminal` before `show running-config`.
+- Both requests still finish as `HTTP 200` headers plus curl timeout with no body, so the live web lane still bottoms out before a returned config payload.
+- The attached `zyshd` trace stayed low-signal on this run and should be treated as diagnostic only; the decisive evidence here is the same-run staging split, not a proven backend-state flip.
+- This still supports the current root-cause position: the parser desync is real, but the live lane still stops short of privileged output.
+
+[backend trace excerpts]
+- baseline:
+  no matched backend key lines captured
+- semicolon_suffix:
+  no matched backend key lines captured
+
+[artifacts]
+- live_artifacts/cookie_desync_backend_compare_20260422e/baseline/headers.txt
+- live_artifacts/cookie_desync_backend_compare_20260422e/baseline/body.bin
+- live_artifacts/cookie_desync_backend_compare_20260422e/baseline/zysh-cgi.dump.txt
+- live_artifacts/cookie_desync_backend_compare_20260422e/baseline/clidump.gui.txt
+- live_artifacts/cookie_desync_backend_compare_20260422e/semicolon_suffix/headers.txt
+- live_artifacts/cookie_desync_backend_compare_20260422e/semicolon_suffix/body.bin
+- live_artifacts/cookie_desync_backend_compare_20260422e/semicolon_suffix/zysh-cgi.dump.txt
+- live_artifacts/cookie_desync_backend_compare_20260422e/semicolon_suffix/clidump.gui.txt

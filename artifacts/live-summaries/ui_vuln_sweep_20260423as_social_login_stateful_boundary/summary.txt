@@ -1,0 +1,37 @@
+label=ui_vuln_sweep_20260423as_social_login_stateful_boundary
+date=2026-04-23
+target=http://127.0.0.1:8080
+
+authoritative_recheck_base=live_artifacts/portal_smoke_20260423d_recheck_after_core_hang
+
+baseline_portal_run:
+- `portal_smoke_20260423d_recheck_after_core_hang` restored a healthy portal lane:
+  - `cp_login_status=200`
+  - `click_to_continue_status=200`
+  - `social_login_status=500`
+- click-through still returned a body-only guest token line:
+  - `Set-Cookie: authtok=<redacted-lab-token>; path=/; HttpOnly`
+
+direct_follow_up_result:
+- a direct curl replay to the same live listener succeeded once without any cookie:
+  - `POST /cgi-bin/social_login.cgi`
+  - body: `fb_user=test@example.com`
+  - result: `HTTP/1.1 200 OK`
+  - response body: `Set-Cookie: authtok=<redacted-lab-token>; path=/; HttpOnly`
+- current runtime logs confirm the backend accepted that request as a social login:
+  - `.lab-state/uamd.log`:
+    - `logger_handle_login: User 214.170.154.222: User test@example.com social login fb login.`
+  - `.lab-state/uamd.strace.1751567`:
+    - `/dev/user-notify` read containing `social login fb`, `test@example.com`, and the returned `RToh...` token
+    - matching `/dev/user-request` write carrying the same fields
+
+negative_follow_ups:
+- replaying `social_login.cgi` with the returned `authtok` as a real `Cookie:` header returned `HTTP 500`
+- replaying the same request later without a cookie also returned `HTTP 500`
+- branded-host replay with the `authtok` cookie also returned `HTTP 500`
+
+current_implication:
+- `social_login.cgi` is not simply a dead helper on the repaired portal lane
+- there is live evidence of a stateful or timing-sensitive path that accepts an arbitrary `fb_user` and issues a guest `authtok` without any observed Facebook token or OAuth verifier reaching the backend
+- current evidence is strong enough to reject the earlier "always dead / 500 only" conclusion
+- current evidence is not yet clean enough to package as a fully reproducible standalone auth-bypass finding until the exact portal-state precondition is isolated on a fresh lane

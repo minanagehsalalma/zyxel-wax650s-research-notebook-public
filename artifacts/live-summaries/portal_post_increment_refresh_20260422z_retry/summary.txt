@@ -1,0 +1,204 @@
+label=portal_post_increment_refresh_20260422z_retry
+transport=core-plus-promote-full-plus-pty-plus-post-increment-refresh
+result_class=positive_refresh_confirmation
+patch_runtime_reference_before_refresh=0
+apply_max_login_count=1
+refresh_max_login_count=2
+seed_system_default_profile=0
+seed_radio_profile_slots=1
+repair_portal_config_after_refresh=1
+repair_portal_post_login_state=
+repair_portal_post_login_target=
+ssid_profile=SSID1
+ssid_name=zyxel-lab
+portal_profile=THEME1
+core_health_ok=yes
+full_health_ok=yes
+preseed_exit=0
+apply_exit=0
+refresh_exit=0
+portal_config_exists=yes
+portal_info_exists=yes
+whybrid_exists=yes
+cp_login_status=200
+click_to_continue_status=200
+social_login_status=200
+
+[checkpoints]
+after_apply_saved_captive_reference=1
+after_apply_system_default_captive_reference=
+after_apply_runtime_captive_db_reference=0
+after_apply_runtime_ssid_db_captive_profile=THEME1
+after_apply_portal_config_exists=no
+after_apply_portal_info_exists=yes
+after_refresh_saved_captive_reference=1
+after_refresh_system_default_captive_reference=
+after_refresh_runtime_captive_db_reference=1
+after_refresh_runtime_ssid_db_captive_profile=THEME1
+after_refresh_portal_config_exists=no
+after_refresh_portal_info_exists=yes
+after_repair_saved_captive_reference=1
+after_repair_system_default_captive_reference=
+after_repair_runtime_captive_db_reference=1
+after_repair_runtime_ssid_db_captive_profile=THEME1
+after_repair_portal_config_exists=yes
+after_repair_portal_info_exists=yes
+
+[portal_info]
+THEME1:click-through:click-through:internal:0
+
+[apply transcript tail]
+
+Router(config)# 
+[host-send] captive-portal-profile THEME1
+[prompt-regex] Router(?:\([^)]*\))?# 
+captive-portal-profile THEME1
+
+
+Router(config-captive-portal THEME1)# 
+[host-send] method click-through
+[prompt-regex] Router(?:\([^)]*\))?# 
+method click-through
+
+
+Router(config-captive-portal THEME1)# 
+[host-send] portal-type internal
+[prompt-regex] Router(?:\([^)]*\))?# 
+portal-type internal
+
+
+Router(config-captive-portal THEME1)# 
+[host-send] success-page internal
+[prompt-regex] Router(?:\([^)]*\))?# 
+success-page internal
+
+
+Router(config-captive-portal THEME1)# 
+[host-send] max-login-count 1
+[prompt-regex] Router(?:\([^)]*\))?# 
+max-login-count 1
+
+
+Router(config-captive-portal THEME1)# 
+[host-send] exit
+[prompt-regex] Router(?:\([^)]*\))?# 
+exit
+
+
+Router(config)# 
+[host-send] wlan-ssid-profile SSID1
+[prompt-regex] Router(?:\([^)]*\))?# 
+wlan-ssid-profile SSID1
+
+
+Router(config-wlan-ssid SSID1)# 
+[host-send] ssid zyxel-lab
+[prompt-regex] Router(?:\([^)]*\))?# 
+ssid zyxel-lab
+
+
+Router(config-wlan-ssid SSID1)# 
+[host-send] captive-portal THEME1
+[prompt-regex] Router(?:\([^)]*\))?# 
+captive-portal THEME1
+
+
+Router(config-wlan-ssid SSID1)# 
+[host-send] exit
+[prompt-regex] Router(?:\([^)]*\))?# 
+exit
+
+
+Router(config)# 
+[host-send] write
+[prompt-regex] Router(?:\([^)]*\))?# 
+write
+
+
+Router(config)# 
+[host-send] exit
+[prompt-regex] Router(?:\([^)]*\))?# 
+exit
+
+
+Router# 
+[host-send] exit
+[prompt-regex] Router(?:\([^)]*\))?# 
+exit
+
+[prompt-timeout] exit
+
+[refresh transcript tail]
+
+Router(config)# 
+[host-send] captive-portal-profile THEME1
+[prompt-regex] Router(?:\([^)]*\))?# 
+captive-portal-profile THEME1
+
+
+Router(config-captive-portal THEME1)# 
+[host-send] method click-through
+[prompt-regex] Router(?:\([^)]*\))?# 
+method click-through
+
+
+Router(config-captive-portal THEME1)# 
+[host-send] portal-type internal
+[prompt-regex] Router(?:\([^)]*\))?# 
+portal-type internal
+
+
+Router(config-captive-portal THEME1)# 
+[host-send] success-page internal
+[prompt-regex] Router(?:\([^)]*\))?# 
+success-page internal
+
+
+Router(config-captive-portal THEME1)# 
+[host-send] max-login-count 2
+[prompt-regex] Router(?:\([^)]*\))?# 
+max-login-count 2
+
+
+Router(config-captive-portal THEME1)# 
+[host-send] exit
+[prompt-regex] Router(?:\([^)]*\))?# 
+exit
+
+
+Router(config)# 
+[host-send] write
+[prompt-regex] Router(?:\([^)]*\))?# 
+write
+
+
+Router(config)# 
+[host-send] exit
+[prompt-regex] Router(?:\([^)]*\))?# 
+exit
+
+
+Router# 
+[host-send] exit
+[prompt-regex] Router(?:\([^)]*\))?# 
+exit
+
+[prompt-timeout] exit
+
+[refresh trace refs]
+1702:2022814 20:04:10.070614 write(5, "1844,THEME1\n", 12) = 12
+1704:2022814 20:04:10.071588 read(4, "\0000\n55\n120\n120\n1\nRouter(config-captive-portal THEME1)# \nconfigure terminal captive-portal-profile THEME1\n\0", 511) = 105
+1811:2022814 20:04:10.079338 write(1, "\rRouter(config-captive-portal THEME1)# ", 39) = 39
+2089:2022814 20:04:10.100052 write(5, "1844,THEME1\n", 12) = 12
+2093:2022814 20:04:10.101116 read(4, "\0000\n0\n120\n120\n1\nRouter(config-captive-portal THEME1)# \nconfigure terminal captive-portal-profile THEME1\n\0", 511) = 104
+2200:2022814 20:04:10.111425 write(1, "\rRouter(config-captive-portal THEME1)# ", 39) = 39
+2478:2022814 20:04:10.138279 write(5, "1844,THEME1\n", 12) = 12
+2482:2022814 20:04:10.139551 read(4, "\0000\n0\n120\n120\n1\nRouter(config-captive-portal THEME1)# \nconfigure terminal captive-portal-profile THEME1\n\0", 511) = 104
+2589:2022814 20:04:10.147705 write(1, "\rRouter(config-captive-portal THEME1)# ", 39) = 39
+2875:2022814 20:04:10.168615 write(5, "1844,THEME1\n", 12) = 12
+2879:2022814 20:04:10.169314 read(4, "\0000\n0\n120\n120\n1\nRouter(config-captive-portal THEME1)# \nconfigure terminal captive-portal-profile THEME1\n\0", 511) = 104
+2986:2022814 20:04:10.173958 write(1, "\rRouter(config-captive-portal THEME1)# ", 39) = 39
+3240:2022814 20:04:10.191198 write(5, "1844,THEME1\n", 12) = 12
+3244:2022814 20:04:10.191923 read(4, "\0000\n0\n120\n120\n1\nRouter(config-captive-portal THEME1)# \nconfigure terminal captive-portal-profile THEME1\n\0", 511) = 104
+3351:2022814 20:04:10.200301 write(1, "\rRouter(config-captive-portal THEME1)# ", 39) = 39
+3501:2022814 20:04:10.210597 write(5, "1844,THEME1\n", 12) = 12

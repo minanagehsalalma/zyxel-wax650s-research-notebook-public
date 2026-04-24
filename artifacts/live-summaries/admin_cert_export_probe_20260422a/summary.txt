@@ -1,0 +1,27 @@
+result_class=admin_cert_export_probe
+date=2026-04-22
+cert_plain_http=500
+cert_arg0_quote_http=400
+cert_arg1_quote_http=400
+cert_arg0_quote_marker=no
+cert_arg1_quote_marker=no
+
+[dynamic result]
+- `export-cgi?category=cert` did not reproduce the PKCS12 injection pattern on this seam
+- plain admin-cookie local cert export returned `HTTP 500`
+- quote-breaking `arg0=default";id;echo HTTP_CERT_MARKER;#` was rejected early with `HTTP 400`
+- quote-breaking `arg1=local";id;echo HTTP_CERT_MARKER;#` was also rejected early with `HTTP 400`
+- no marker and no `uid=` string appeared in either injected response body
+
+[static implication]
+- the admin UI sweep still points to the PKCS12 password export as the only clear raw text-field input concatenated directly into `export-cgi` arguments
+- the other `export-cgi` download surfaces are store-backed filenames or fixed values on the current UI path
+- no second high-confidence admin-only `export-cgi` bug was confirmed from this branch
+
+[artifacts]
+- `cert_plain.headers.txt`
+- `cert_plain.body.bin`
+- `cert_arg0_quote.headers.txt`
+- `cert_arg0_quote.body.bin`
+- `cert_arg1_quote.headers.txt`
+- `cert_arg1_quote.body.bin`
