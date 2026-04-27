@@ -87,9 +87,10 @@ The lab can prove:
 The lab cannot by itself prove:
 
 - final full-system guest root shell
-- stock browser-valid admin login from a guessed password
+- stock, product-faithful browser-valid admin login from a guessed password
 - social-login auth bypass without a non-synthetic portal runtime source
 - browser JavaScript execution from a server-side redirect
 
-That distinction is the main reason the findings stayed reviewable.
+Later work did recover a browser-valid admin login in the emulation-limited manual `lighttpd` over `core` lane, but that is still a lab-bounded result rather than a stock-fidelity product proof. See [weblogin_manual_recovery_20260427](../artifacts/live-summaries/weblogin_manual_recovery_20260427/summary.txt).
 
+That distinction is the main reason the findings stayed reviewable.

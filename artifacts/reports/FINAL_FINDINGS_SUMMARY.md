@@ -96,6 +96,7 @@ Primary evidence:
 
 - EPS `innerHTML` sink: static candidate only; no live attacker-controlled source was found.
 - Dashboard raw ExtJS `html:` sinks: static candidate only; no writable source or execution was proved.
+- Manual `weblogin.cgi` recovery: an emulation-limited manual `lighttpd` over `core` lane eventually produced real admin cookie issuance and a successful `chgpw.html` follow-up, but this is a lab-validation milestone rather than a promoted vulnerability by itself.
 - `social_login.cgi` trust seam: interesting under repaired portal state, but still depends on synthetic/repaired runtime conditions.
 - Upload traversal and guest/no-cookie upload variants: negative on current evidence.
 - Malformed PKCS#12 content: negative for RCE or stored-XSS impact on current evidence.

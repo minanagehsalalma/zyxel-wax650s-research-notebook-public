@@ -1,0 +1,16 @@
+lane=manual_lighttpd_over_core
+result=browser_valid_admin_login_recovered
+fidelity=emulation_limited
+preconditions=repaired_passwd_shadow_links vendor_admin_hash_restored default_password_path unique_def_pw_present uam_lockout_ipc_seeded
+direct_cgi_pam_chain=auth:0 acct:0 setcred:0 open_session:0
+notify_publication=yes
+uam_state_present=yes
+authtok_issued=yes
+http_login_status=302
+http_follow_status=200
+follow_target=ext-js/web-pages/login/chgpw.html
+
+- This summary records the recovered manual `weblogin.cgi` path in the emulation-backed `core` plus manual `lighttpd` lane.
+- The important boundary change is narrow: a real login-originated cookie was minted by the shipped login path and successfully opened the follow-up change-password route.
+- This does not turn synthetic-token backend tests into browser proofs; it shows that the browser-valid boundary can be crossed only when the login path itself completes session publication.
+- The summary deliberately excludes raw tokens, bulk traces, and private lab state.

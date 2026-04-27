@@ -38,7 +38,8 @@ That is why the notebook uses two layers of impact language:
 
 Several tests proved that manually seeded backend tokens are not the same as browser-valid sessions. For example, `authtok=admin0` could be meaningful to a backend test harness but still fail to open the authenticated ExtJS shell in a browser route.
 
+Later manual-lane recovery narrowed that boundary without collapsing it. In the emulation-limited `core` plus manual `lighttpd` lane, the shipped `weblogin.cgi` path itself was made to complete session publication, mint a real `authtok`, and load the follow-up `chgpw.html` route. That result is summarized in [weblogin_manual_recovery_20260427](../artifacts/live-summaries/weblogin_manual_recovery_20260427/summary.txt).
+
 The rule used throughout the project:
 
 If a result depends on a synthetic token, call it a backend or handler proof, not a browser-auth proof.
-

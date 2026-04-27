@@ -11,6 +11,7 @@ These are selected summary artifacts only. They preserve the result boundaries u
 
 - [manual_cookie_desync_smoke_20260421b](manual_cookie_desync_smoke_20260421b/summary.txt): live proof that `mod_auth_zyxel` and `zysh-cgi` parse cookie values differently.
 - [cookie_desync_backend_compare_20260422e](cookie_desync_backend_compare_20260422e/summary.txt): same-run backend comparison for baseline versus semicolon-suffixed cookie cases.
+- [weblogin_manual_recovery_20260427](weblogin_manual_recovery_20260427/summary.txt): recovered manual login-originated `authtok` issuance and `chgpw.html` follow-up in the emulation-backed `core` plus manual `lighttpd` lane.
 
 ## Captive Portal Runtime
 

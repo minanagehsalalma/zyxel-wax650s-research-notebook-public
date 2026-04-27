@@ -14,7 +14,8 @@ This is the high-level sequence of the work. The full raw chronology lives in th
 - Direct CGI and web-lane tests proved guest requests can reach the real `zysh-cgi` handler.
 - GDB and trace runs separated CGI-layer dispatch from backend command completion.
 - Fake `/proc`, `/proc/MRD`, `clidump.conf`, switch, WLAN, and IPC gaps were progressively removed as false blockers.
-- Final position: real handler-level auth/session weakness, but no finished guest-admin backend impact on the tested build.
+- Later manual-lane recovery showed the shipped `weblogin.cgi` path can mint a browser-valid admin `authtok` and load `chgpw.html` when the emulation-backed manual `lighttpd` over `core` lane is repaired enough for session publication.
+- Final position: real handler-level auth/session weakness remains separate from the recovered admin login path, and no finished guest-admin backend impact was proved on the tested build.
 
 ## Admin Export Command Injection
 
@@ -50,4 +51,3 @@ This is the high-level sequence of the work. The full raw chronology lives in th
 - Cookie parser mismatch details were separated from the new open redirect finding.
 - The final outbound open redirect package used a realistic but benign captive-portal continuation page.
 - This private notebook was created to preserve the full research story and future LLM context without publishing raw firmware or bulk lab state.
-
